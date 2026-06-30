@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">folder_demo</string>
+    <string name="title_select_all_default_text">全选</string>
+    <string name="title_cancel_text">取消</string>
+    <string name="tool_image_text">图片</string>
+    <string name="tool_video_text">视频</string>
+    <string name="title_text">相册</string>
+    <string name="no">no</string>
+    <string name="status_share_text">分享</string>
+    <string name="status_delete_text">删除</string>
+</resources>

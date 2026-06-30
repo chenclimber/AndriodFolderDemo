@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:id="@+id/status_bar">
+
+    <TextView
+        android:id="@+id/status_share"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_weight="1"
+        android:text="@string/status_share_text"
+        android:gravity="center"
+        android:paddingStart="80dp"
+        android:paddingEnd="10dp"
+        app:drawableTopCompat="@drawable/ic_circle_share"
+        android:clickable="true"
+        android:focusable="true"/>
+    <TextView
+        android:id="@+id/status_delete"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/status_delete_text"
+        app:drawableTopCompat="@drawable/ic_circle_delete"
+        android:paddingStart="10dp"
+        android:paddingEnd="80dp"
+        android:clickable="true"
+        android:focusable="true"/>
+</LinearLayout>
