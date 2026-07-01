@@ -35,7 +35,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 标题栏-编辑按钮触发时，修改显示模式标志位
      */
-    private boolean view_mode;
+    private boolean edit_view_mode;
+    /**
+     * 用于控制“图片”“视频”图标颜色,false选中图片，ture选中视频
+     *
+     */
+    private boolean content_view_mode;
     private boolean title_select_all_none_selected;
 
     //权限获取部分
@@ -49,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         init_item();
         checkPermisson();
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/hongshi/IMAGE";
-        ContentAdapter adapter = new ContentAdapter(path,this);
+        ContentAdapter adapter = new ContentAdapter(path, this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         content_recyclerView.setLayoutManager(linearLayoutManager);
         content_recyclerView.setAdapter(adapter);
@@ -80,13 +85,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         status_delete = (TextView) findViewById(R.id.status_delete);
 
         bind_onclickListener();
-        view_mode = false;
+        edit_view_mode = false;
         title_select_all_none_selected = true;
-        change_view_mode();
+        content_view_mode = false;
+        change_edit_view_mode();
+        change_content_view_mode();
     }
 
-    private void change_view_mode() {
-        if (view_mode) {
+    private void change_edit_view_mode() {
+        if (edit_view_mode) {
             title_exit.setVisibility(View.GONE);
             title_select_all_none.setVisibility(View.VISIBLE);
             title_edit.setVisibility(View.GONE);
@@ -98,6 +105,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             title_edit.setVisibility(View.VISIBLE);
             title_cancel.setVisibility(View.GONE);
             status_bar.setVisibility(View.GONE);
+        }
+    }
+
+    private void change_content_view_mode() {
+        if (content_view_mode) {
+            //选中视频
+            tool_video.setSelected(true);
+            tool_image.setSelected(false);
+        } else {
+            //选中图片
+            tool_image.setSelected(true);
+            tool_video.setSelected(false);
         }
     }
 
@@ -118,13 +137,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (id == R.id.title_exit) {
             finish();
         } else if (id == R.id.title_edit) {
-            view_mode = !view_mode;
-            change_view_mode();
+            edit_view_mode = !edit_view_mode;
+            change_edit_view_mode();
         } else if (id == R.id.title_cancel) {
-            view_mode = !view_mode;
-            change_view_mode();
+            edit_view_mode = !edit_view_mode;
+            change_edit_view_mode();
         } else if (id == R.id.title_select_all_none) {
             on_title_select_all_none_clicked();
+        } else if (id == R.id.tool_image) {
+            content_view_mode = false;
+            change_content_view_mode();
+        } else if (id == R.id.tool_video) {
+            content_view_mode = true;
+            change_content_view_mode();
         }
     }
 
@@ -151,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             ActivityCompat.requestPermissions(MainActivity.this, PermissonMethods, RequestExternalStorage);
                         }
                     }).create();
-                    dialog.show();
+            dialog.show();
         }
     }
 

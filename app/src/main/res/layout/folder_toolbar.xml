@@ -20,13 +20,15 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:contentDescription="@string/no"
-            android:src="@drawable/image" />
+            android:src="@drawable/image"
+            app:tint="@color/selector_tool_item" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/tool_image_text"
             android:gravity="center"
-            android:layout_marginStart="10dp"/>
+            android:layout_marginStart="10dp"
+            android:textColor="@color/selector_tool_item"/>
     </LinearLayout>
 
     <LinearLayout
@@ -44,13 +46,15 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:contentDescription="@string/no"
-            android:src="@drawable/video" />
+            android:src="@drawable/video"
+            app:tint="@color/selector_tool_item"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/tool_video_text"
             android:gravity="center"
-            android:layout_marginStart="10dp"/>
+            android:layout_marginStart="10dp"
+            android:textColor="@color/selector_tool_item"/>
     </LinearLayout>
 
 

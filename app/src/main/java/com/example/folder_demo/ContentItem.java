@@ -1,19 +1,26 @@
 package com.example.folder_demo;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
+import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ContentItem {
     private String date;
-    public List<Bitmap> bitMapList;
+    public List<String> imagePathList;
 
     public ContentItem() {
-        bitMapList = new ArrayList<>();
+        imagePathList = new ArrayList<>();
     }
 
     public String getDate() {
@@ -25,14 +32,15 @@ public class ContentItem {
     }
 
 
-
 }
 
-class ContentList{
+class ContentList {
     private List<ContentItem> ContentItemList;
     private String directory;
 
+
     public ContentList(String directory) {
+
         this.directory = directory;
     }
 
@@ -41,33 +49,34 @@ class ContentList{
         return ContentItemList;
     }
 
-    private void GetContent(){
+    private void GetContent() {
         ContentItemList = new ArrayList<>();
         File dir = new File(directory);
         File[] files = dir.listFiles();
-        if(files != null){
+        if (files != null) {
             String oldDate = parseDate(files[0].getName());
             ContentItem item = new ContentItem();
-            for(File file:files){
+            for (File file : files) {
                 String Date = parseDate(file.getName());
-                if(Date.equals(oldDate)){
+                String path = file.getPath();
+                if (Date.equals(oldDate)) {
                     item.setDate(Date);
-                    item.bitMapList.add(generateBitmap(file.getPath(),300,200));
-                }
-                else {
+                    item.imagePathList.add(path);
+                } else {
                     ContentItemList.add(item);
                     item = new ContentItem();
                     oldDate = Date;
                     item.setDate(Date);
-                    item.bitMapList.add(generateBitmap(file.getPath(),300,200));
+                    item.imagePathList.add(path);
                 }
-                if(file == files[files.length-1]){
+                if (file == files[files.length - 1]) {
                     ContentItemList.add(item);
                 }
             }
         }
     }
-    private String parseDate(String fileName){
+
+    private String parseDate(String fileName) {
         //20260319142218801_104600976_screenshot.jpg
         // 时间部分: 2026 03 19 14 22 18 801 (年月日时分秒毫秒)
         String year = fileName.substring(0, 4);      // 2026
@@ -76,8 +85,5 @@ class ContentList{
         return year + "-" + month + "-" + day;
     }
 
-    private Bitmap generateBitmap(String filePath,int width,int height){
-        Bitmap originBitmap = BitmapFactory.decodeFile(filePath);
-        return ThumbnailUtils.extractThumbnail(originBitmap,width,height);
-    }
+
 }
