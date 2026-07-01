@@ -3,6 +3,7 @@ package com.example.folder_demo;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
@@ -13,6 +14,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +37,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout status_bar;
     private TextView status_share;
     private TextView status_delete;
+
+    private ContentAdapter adapter;
+
+    private ActivityResultLauncher<Intent> resultLauncher;
     /**
      * 标题栏-编辑按钮触发时，修改显示模式标志位
      */
@@ -54,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         init_item();
         checkPermisson();
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/hongshi/IMAGE";
-        ContentAdapter adapter = new ContentAdapter(path, this);
+        adapter = new ContentAdapter(path, this, resultLauncher);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         content_recyclerView.setLayoutManager(linearLayoutManager);
         content_recyclerView.setAdapter(adapter);
@@ -90,6 +99,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         content_view_mode = false;
         change_edit_view_mode();
         change_content_view_mode();
+        create_resultLauncher();
+    }
+
+    private void create_resultLauncher() {
+        resultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult o) {
+                        if (o.getResultCode() == RESULT_OK) {
+                            Intent intent = o.getData();
+                            if (intent != null) {
+                                int row = intent.getIntExtra("row", -1);
+                                int col = intent.getIntExtra("col", -1);
+                                if (row != -1 && col != -1) {
+                                    adapter.removeItem(row,col);
+                                }
+                            }
+                        }
+                    }
+                }
+        );
     }
 
     private void change_edit_view_mode() {
@@ -138,9 +169,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             finish();
         } else if (id == R.id.title_edit) {
             edit_view_mode = !edit_view_mode;
+            adapter.edit_view_mode = true;
             change_edit_view_mode();
         } else if (id == R.id.title_cancel) {
             edit_view_mode = !edit_view_mode;
+            adapter.edit_view_mode = false;
             change_edit_view_mode();
         } else if (id == R.id.title_select_all_none) {
             on_title_select_all_none_clicked();

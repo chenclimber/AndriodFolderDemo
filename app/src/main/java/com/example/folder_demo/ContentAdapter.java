@@ -1,8 +1,10 @@
 package com.example.folder_demo;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +26,10 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
     private List<ContentItem> ContentItemList;
     private final Context context;
 
+    public boolean edit_view_mode;
+
+    private ActivityResultLauncher<Intent> resultLauncher;
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView content_date;
         FrameLayout content_frameLayout;
@@ -34,10 +41,17 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         }
     }
 
-    public ContentAdapter(String directory, Context context) {
+    static class ImagePositionInfo{
+        String imagePath;
+        int row;
+        int col;
+    }
+
+    public ContentAdapter(String directory, Context context,ActivityResultLauncher<Intent> resultLauncher) {
         ContentList contentList = new ContentList(directory);
         ContentItemList = contentList.getContentItemList();
         this.context = context;
+        this.resultLauncher = resultLauncher;
     }
 
     @NonNull
@@ -48,18 +62,18 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         ContentItem item = ContentItemList.get(position);
         holder.content_date.setText(item.getDate());
         int margin = 35;
 
         for (int i = 0; i < item.imagePathList.size(); i++) {
             String path = item.imagePathList.get(i);
+            ImagePositionInfo imagePositionInfo = new ImagePositionInfo();
 
             ImageView imageView = new ImageView(context);
             Glide.with(context).load(path).transform(new RoundedCorners(50)).encodeQuality(50).into(imageView);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setTag(path);
 
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(320, 200);
 
@@ -73,13 +87,28 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
             params.gravity = Gravity.TOP | Gravity.START;
 
             imageView.setLayoutParams(params);
+
+            imagePositionInfo.imagePath = path;
+            imagePositionInfo.row = position;
+            imagePositionInfo.col = i;
+            imageView.setTag(imagePositionInfo);
+
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, ContentImageActivity.class);
-                    String path = (String) v.getTag();
-                    intent.putExtra("path",path);
-                    context.startActivity(intent);
+                    if(edit_view_mode){
+
+                    }
+                    else {
+                        Intent intent = new Intent(context, ContentImageActivity.class);
+                        ImagePositionInfo imagePositionInfo = (ImagePositionInfo)v.getTag();
+                        intent.putExtra("path",imagePositionInfo.imagePath);
+                        intent.putExtra("row",imagePositionInfo.row);
+                        intent.putExtra("col",imagePositionInfo.col);
+//                        context.startActivity(intent);
+                        resultLauncher.launch(intent);
+
+                    }
                 }
             });
             holder.content_frameLayout.addView(imageView);
@@ -89,6 +118,20 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
     @Override
     public int getItemCount() {
         return ContentItemList.size();
+    }
+
+    public void removeItem(int row,int col){
+        int total_row = ContentItemList.size();
+        int total_col = ContentItemList.get(row).imagePathList.size();
+        if(total_col == 1){
+            //当前行只剩下最后一个元素，删除整行
+            ContentItemList.remove(row);
+            notifyItemRemoved(row);
+        }
+        else{
+            ContentItemList.get(row).imagePathList.remove(col);
+            notifyItemChanged(row);
+        }
     }
 }
 

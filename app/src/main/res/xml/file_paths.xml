@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 外部存储根目录 -->
+    <external-path
+        name="external"
+        path="." />
+
+    <!-- DCIM 目录 -->
+    <external-path
+        name="dcim"
+        path="DCIM/" />
+
+    <!-- Pictures 目录 -->
+    <external-path
+        name="pictures"
+        path="Pictures/" />
+
+    <!-- 内部存储 files 目录 -->
+    <files-path
+        name="files"
+        path="." />
+
+    <!-- 缓存目录 -->
+    <cache-path
+        name="cache"
+        path="." />
+
+    <!-- 外部缓存目录 -->
+    <external-cache-path
+        name="external_cache"
+        path="." />
+
+    <!-- Android 10+ 媒体目录 -->
+    <external-media-path
+        name="media"
+        path="." />
+
+</paths>
