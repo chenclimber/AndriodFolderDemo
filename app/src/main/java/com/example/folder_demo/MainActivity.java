@@ -19,6 +19,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -81,6 +82,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1001) {
+            if (resultCode == RESULT_OK) {
+                adapter.delete_images();
+                return;
+            }
+        }
+    }
+
     private void init_item() {
         title_exit = (Button) findViewById(R.id.title_exit);
         title_select_all_none = (TextView) findViewById(R.id.title_select_all_none);
@@ -114,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 int row = intent.getIntExtra("row", -1);
                                 int col = intent.getIntExtra("col", -1);
                                 if (row != -1 && col != -1) {
-                                    adapter.removeItem(row,col);
+                                    adapter.removeSingleItem(row, col);
                                 }
                             }
                         }
@@ -170,11 +182,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (id == R.id.title_edit) {
             edit_view_mode = !edit_view_mode;
             adapter.edit_view_mode = true;
+            adapter.notifyDataSetChanged();
             change_edit_view_mode();
         } else if (id == R.id.title_cancel) {
-            edit_view_mode = !edit_view_mode;
-            adapter.edit_view_mode = false;
-            change_edit_view_mode();
+            on_title_cancel_triggered();
         } else if (id == R.id.title_select_all_none) {
             on_title_select_all_none_clicked();
         } else if (id == R.id.tool_image) {
@@ -183,6 +194,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (id == R.id.tool_video) {
             content_view_mode = true;
             change_content_view_mode();
+        } else if (id == R.id.status_delete) {
+            adapter.send_delete_images_request();
+        } else if (id == R.id.status_share) {
+            adapter.share_images();
         }
     }
 
@@ -191,10 +206,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (title_select_all_none_selected) {
             //从“全选”切换为“全不选”，当前执行逻辑为“全选”
             title_select_all_none.setText("全不选");
+            adapter.select_all();
         } else {
-            //从“全不选”切换为“全选”，当前执行逻辑为“全选”
+            //从“全不选”切换为“全选”，当前执行逻辑为“全不选”
             title_select_all_none.setText("全选");
+            adapter.clear_Image_selected_List();
+            adapter.notifyDataSetChanged();
         }
+    }
+
+    private void on_title_cancel_triggered(){
+        edit_view_mode = !edit_view_mode;
+        adapter.edit_view_mode = false;
+        adapter.clear_Image_selected_List();
+        adapter.notifyDataSetChanged();
+        change_edit_view_mode();
     }
 
     private void checkPermisson() {

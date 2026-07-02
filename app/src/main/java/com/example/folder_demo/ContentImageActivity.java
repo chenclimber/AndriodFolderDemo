@@ -125,11 +125,10 @@ public class ContentImageActivity extends AppCompatActivity implements View.OnCl
     private void delete_image() throws IntentSender.SendIntentException {
         ContentResolver resolver = getContentResolver();
         Uri imageUri = null;
-
+        Log.d("测试", "delete_image: "+MediaStore.Images.Media.DATA + "=?");
         String[] projection = {MediaStore.Images.Media._ID};
         String selection = MediaStore.Images.Media.DATA + "=?";
         String[] selectionArgs = {imagePath};
-
         Cursor cursor = resolver.query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 projection,
